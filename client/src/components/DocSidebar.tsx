@@ -27,9 +27,10 @@ interface DocSidebarProps {
   mobileOpen?: boolean;
   user?: any;
   onLogout?: () => void;
+  onDocsUpdate?: (updater: (prev: SavedDoc[]) => SavedDoc[]) => void;
 }
 
-function DocSidebar({ currentDocId, savedDocs, onClose, mobileOpen, user, onLogout }: DocSidebarProps) {
+function DocSidebar({ currentDocId, savedDocs, onClose, mobileOpen, user, onLogout, onDocsUpdate }: DocSidebarProps) {
   const navigate = useNavigate();
 
   // Generate a random document ID and navigate to the new document page
@@ -100,7 +101,12 @@ function DocSidebar({ currentDocId, savedDocs, onClose, mobileOpen, user, onLogo
                   onClick={(e) => {
                     e.stopPropagation();
                     if (user) {
-                      // Toggle star status for this document via Socket
+                      // Optimistic update in sidebar
+                      if (onDocsUpdate) {
+                        onDocsUpdate(prev =>
+                          prev.map(d => d.documentId === doc.documentId ? { ...d, isStarred: !d.isStarred } : d)
+                        );
+                      }
                       socket.emit("toggle-star-document", { documentId: doc.documentId, userId: user.uid });
                     }
                   }}
@@ -113,7 +119,12 @@ function DocSidebar({ currentDocId, savedDocs, onClose, mobileOpen, user, onLogo
                   onClick={(e) => {
                     e.stopPropagation();
                     if (user) {
-                      // Move document to trash via Socket
+                      // Optimistic update in sidebar
+                      if (onDocsUpdate) {
+                        onDocsUpdate(prev =>
+                          prev.map(d => d.documentId === doc.documentId ? { ...d, isTrashed: true } : d)
+                        );
+                      }
                       socket.emit("trash-document", { documentId: doc.documentId, userId: user.uid });
                     }
                   }}

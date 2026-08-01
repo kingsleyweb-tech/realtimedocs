@@ -109,6 +109,12 @@ function Document() {
           displayName: currentUser.displayName,
           photoURL: currentUser.photoURL,
         });
+
+        // Load cached doc list into sidebar instantly
+        const cached = localStorage.getItem(`user-docs-${currentUser.uid}`);
+        if (cached) {
+          try { setSavedDocs(JSON.parse(cached)); } catch {}
+        }
       } else {
         // Not signed in — send them to login, preserving the document URL
         navigate(`/login?redirect=/document/${id}`, { replace: true });
@@ -156,6 +162,9 @@ function Document() {
 
     socket.on("user-documents", (docs: SavedDoc[]) => {
       setSavedDocs(docs);
+      // Cache for instant load next time
+      const uid = auth.currentUser?.uid;
+      if (uid) localStorage.setItem(`user-docs-${uid}`, JSON.stringify(docs));
     });
 
     socket.on("presence-update", (users: any[]) => {
@@ -475,9 +484,10 @@ function Document() {
             mobileOpen={mobileSidebarOpen}
             user={user}
             onLogout={handleLogout}
+            onDocsUpdate={setSavedDocs}
           />
         ) : (
-          sidebarOpen && <DocSidebar currentDocId={id} savedDocs={savedDocs} user={user} onLogout={handleLogout} />
+          sidebarOpen && <DocSidebar currentDocId={id} savedDocs={savedDocs} user={user} onLogout={handleLogout} onDocsUpdate={setSavedDocs} />
         )}
 
         <main className="doc-main">

@@ -38,6 +38,16 @@ function Starred() {
         return;
       }
       setUser(currentUser);
+
+      // Load cached docs instantly while waiting for server
+      const cached = localStorage.getItem(`user-docs-${currentUser.uid}`);
+      if (cached) {
+        try {
+          setDocs(JSON.parse(cached));
+          setLoading(false);
+        } catch {}
+      }
+
       socket.emit("get-user-documents", currentUser.uid);
     });
     return () => unsubscribe();
@@ -48,6 +58,8 @@ function Starred() {
     const handleDocs = (userDocs: SavedDoc[]) => {
       setDocs(userDocs);
       setLoading(false);
+      const uid = auth.currentUser?.uid;
+      if (uid) localStorage.setItem(`user-docs-${uid}`, JSON.stringify(userDocs));
     };
     socket.on("user-documents", handleDocs);
     return () => { socket.off("user-documents", handleDocs); };
@@ -72,6 +84,8 @@ function Starred() {
   const toggleStar = (e: React.MouseEvent, docId: string) => {
     e.stopPropagation();
     if (user) {
+      // Optimistic update — flip star immediately in UI
+      setDocs(prev => prev.map(d => d.documentId === docId ? { ...d, isStarred: !d.isStarred } : d));
       socket.emit("toggle-star-document", { documentId: docId, userId: user.uid });
     }
   };
@@ -80,6 +94,8 @@ function Starred() {
   const moveToTrash = (e: React.MouseEvent, docId: string) => {
     e.stopPropagation();
     if (user) {
+      // Optimistic update — remove from starred view immediately
+      setDocs(prev => prev.map(d => d.documentId === docId ? { ...d, isTrashed: true } : d));
       socket.emit("trash-document", { documentId: docId, userId: user.uid });
     }
   };
@@ -135,7 +151,7 @@ function Starred() {
 
       {/* ── Body: Sidebar + Main Content ── */}
       <div className="doc-body">
-        <DocSidebar currentDocId="" savedDocs={activeDocs} user={user} onLogout={handleLogout} />
+        <DocSidebar currentDocId="" savedDocs={activeDocs} user={user} onLogout={handleLogout} onDocsUpdate={setDocs} />
 
         <main className="dashboard-main" style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
           <section className="dashboard-section">

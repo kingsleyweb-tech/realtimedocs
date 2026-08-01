@@ -32,6 +32,16 @@ function Dashboard() {
         return;
       }
       setUser(currentUser);
+
+      // Load cached docs instantly while waiting for server
+      const cached = localStorage.getItem(`user-docs-${currentUser.uid}`);
+      if (cached) {
+        try {
+          setDocs(JSON.parse(cached));
+          setLoading(false);
+        } catch {}
+      }
+
       socket.emit("save-user", {
         uid: currentUser.uid,
         email: currentUser.email,
@@ -43,11 +53,14 @@ function Dashboard() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Socket: receive user documents
+  // Socket: receive user documents — cache for instant next load
   useEffect(() => {
     const handleDocs = (userDocs: SavedDoc[]) => {
       setDocs(userDocs);
       setLoading(false);
+      // Cache with userId key so multiple users on same device are isolated
+      const uid = auth.currentUser?.uid;
+      if (uid) localStorage.setItem(`user-docs-${uid}`, JSON.stringify(userDocs));
     };
     socket.on("user-documents", handleDocs);
     return () => { socket.off("user-documents", handleDocs); };
@@ -74,6 +87,8 @@ function Dashboard() {
   const toggleStar = (e: React.MouseEvent, docId: string) => {
     e.stopPropagation();
     if (user) {
+      // Optimistic update — flip star immediately in UI
+      setDocs(prev => prev.map(d => d.documentId === docId ? { ...d, isStarred: !d.isStarred } : d));
       socket.emit("toggle-star-document", { documentId: docId, userId: user.uid });
     }
   };
@@ -81,6 +96,8 @@ function Dashboard() {
   const moveToTrash = (e: React.MouseEvent, docId: string) => {
     e.stopPropagation();
     if (user) {
+      // Optimistic update — remove from list immediately
+      setDocs(prev => prev.map(d => d.documentId === docId ? { ...d, isTrashed: true } : d));
       socket.emit("trash-document", { documentId: docId, userId: user.uid });
     }
   };
@@ -148,7 +165,7 @@ function Dashboard() {
 
       {/* ── Body: Sidebar + Main Content ── */}
       <div className="doc-body">
-        <DocSidebar currentDocId="" savedDocs={activeDocs} user={user} onLogout={handleLogout} />
+        <DocSidebar currentDocId="" savedDocs={activeDocs} user={user} onLogout={handleLogout} onDocsUpdate={setDocs} />
 
         <main className="dashboard-main" style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
 

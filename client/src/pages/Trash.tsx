@@ -39,6 +39,16 @@ function Trash() {
         return;
       }
       setUser(currentUser);
+
+      // Load cached docs instantly while waiting for server
+      const cached = localStorage.getItem(`user-docs-${currentUser.uid}`);
+      if (cached) {
+        try {
+          setDocs(JSON.parse(cached));
+          setLoading(false);
+        } catch {}
+      }
+
       socket.emit("get-user-documents", currentUser.uid);
     });
     return () => unsubscribe();
@@ -49,6 +59,8 @@ function Trash() {
     const handleDocs = (userDocs: SavedDoc[]) => {
       setDocs(userDocs);
       setLoading(false);
+      const uid = auth.currentUser?.uid;
+      if (uid) localStorage.setItem(`user-docs-${uid}`, JSON.stringify(userDocs));
     };
     socket.on("user-documents", handleDocs);
     return () => { socket.off("user-documents", handleDocs); };
@@ -66,6 +78,8 @@ function Trash() {
   const restoreDoc = (e: React.MouseEvent, docId: string) => {
     e.stopPropagation();
     if (user) {
+      // Optimistic update — mark as not trashed immediately
+      setDocs(prev => prev.map(d => d.documentId === docId ? { ...d, isTrashed: false } : d));
       socket.emit("restore-document", { documentId: docId, userId: user.uid });
     }
   };
@@ -77,6 +91,8 @@ function Trash() {
 
   const confirmDelete = () => {
     if (user && confirmDocId) {
+      // Optimistic update — remove from list immediately
+      setDocs(prev => prev.filter(d => d.documentId !== confirmDocId));
       socket.emit("delete-document-permanent", { documentId: confirmDocId, userId: user.uid });
     }
     setConfirmDocId(null);
@@ -131,7 +147,7 @@ function Trash() {
 
       {/* ── Body: Sidebar + Main Content ── */}
       <div className="doc-body">
-        <DocSidebar currentDocId="" savedDocs={activeDocs} user={user} onLogout={handleLogout} />
+        <DocSidebar currentDocId="" savedDocs={activeDocs} user={user} onLogout={handleLogout} onDocsUpdate={setDocs} />
 
         <main className="dashboard-main" style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
           <section className="dashboard-section">
