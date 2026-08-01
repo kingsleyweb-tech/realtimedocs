@@ -9,10 +9,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es2020",
-    // For nodejs:
-    // "lib": ["es2020"],
-    // "types": ["node"],
-    // and npm install -D @types/node
+    "types": ["node"],
 
     // Other Outputs
     "sourceMap": true,
@@ -36,6 +33,8 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-  }
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
