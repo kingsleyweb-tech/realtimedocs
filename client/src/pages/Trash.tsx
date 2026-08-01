@@ -48,11 +48,27 @@ function Trash() {
           setLoading(false);
         } catch {}
       }
-
-      socket.emit("get-user-documents", currentUser.uid);
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // Handle socket data fetching on load and reconnect
+  useEffect(() => {
+    if (!user) return;
+
+    const handleConnect = () => {
+      socket.emit("get-user-documents", user.uid);
+    };
+
+    if (socket.connected) {
+      handleConnect();
+    }
+
+    socket.on("connect", handleConnect);
+    return () => {
+      socket.off("connect", handleConnect);
+    };
+  }, [user]);
 
   // Socket listener
   useEffect(() => {

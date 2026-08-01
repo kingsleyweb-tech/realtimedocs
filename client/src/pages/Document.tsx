@@ -210,8 +210,26 @@ function Document() {
   // ── Join the document room once both document ID and userId are known ──
   useEffect(() => {
     if (!id || !userId) return;
-    socket.emit("join-document", { documentId: id, userId });
-  }, [id, userId]);
+
+    const handleConnect = () => {
+      socket.emit("join-document", {
+        documentId: id,
+        userId,
+        email: user?.email,
+        displayName: user?.displayName,
+        photoURL: user?.photoURL
+      });
+    };
+
+    if (socket.connected) {
+      handleConnect();
+    }
+
+    socket.on("connect", handleConnect);
+    return () => {
+      socket.off("connect", handleConnect);
+    };
+  }, [id, userId, user]);
 
   // ── Fetch user's document list and sharing settings via Socket whenever userId is ready ──
   useEffect(() => {

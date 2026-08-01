@@ -41,17 +41,33 @@ function Dashboard() {
           setLoading(false);
         } catch {}
       }
-
-      socket.emit("save-user", {
-        uid: currentUser.uid,
-        email: currentUser.email,
-        displayName: currentUser.displayName,
-        photoURL: currentUser.photoURL,
-      });
-      socket.emit("get-user-documents", currentUser.uid);
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // Handle socket data fetching and save-user on load and reconnect
+  useEffect(() => {
+    if (!user) return;
+
+    const handleConnect = () => {
+      socket.emit("save-user", {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+      });
+      socket.emit("get-user-documents", user.uid);
+    };
+
+    if (socket.connected) {
+      handleConnect();
+    }
+
+    socket.on("connect", handleConnect);
+    return () => {
+      socket.off("connect", handleConnect);
+    };
+  }, [user]);
 
   // Socket: receive user documents — cache for instant next load
   useEffect(() => {

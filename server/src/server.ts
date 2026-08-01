@@ -1,6 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import mongoose from "mongoose";
 import connectDatabase from "./config/database";
 import Document from "./models/Document";
 import User from "./models/User";
@@ -9,12 +13,10 @@ const app = express();
 
 const httpServer = createServer(app);
 
-// Allow both local dev and the deployed Vercel frontend
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
-
 const io = new Server(httpServer, {
   cors: {
-    origin: CLIENT_ORIGIN,
+    origin: "*", // Relax CORS controls to prevent Netlify-Render client disconnects
+    methods: ["GET", "POST"]
   },
 });
 
@@ -23,6 +25,21 @@ const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.send("Realtime Docs Server Running");
+});
+
+app.get("/db-status", (req, res) => {
+  const state = mongoose.connection.readyState;
+  const states: Record<number, string> = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting"
+  };
+  res.json({
+    status: states[state] || "unknown",
+    host: mongoose.connection.host || null,
+    name: mongoose.connection.name || null
+  });
 });
 
 const activeDocumentUsers = new Map<string, Array<{
@@ -90,11 +107,26 @@ io.on("connection", (socket) => {
   });
 
   // 2. Join document & load data & emit user's document history
-  socket.on("join-document", async ({ documentId, userId }) => {
+  socket.on("join-document", async ({ documentId, userId, email, displayName, photoURL }) => {
     try {
       let document = await Document.findOne({ documentId });
-      const userDb = userId ? await User.findOne({ uid: userId }) : null;
-      const userEmail = userDb ? userDb.email : "";
+      
+      // Inline user creation as fallback to avoid race conditions
+      let userDb: any = null;
+      if (userId) {
+        userDb = await User.findOne({ uid: userId });
+        if (!userDb && email) {
+          userDb = await User.create({
+            uid: userId,
+            email,
+            displayName,
+            photoURL
+          });
+          console.log("SUCCESS: Inline saved user to MongoDB:", userDb.displayName || userDb.email);
+        }
+      }
+      
+      const userEmail = userDb ? userDb.email : (email || "");
 
       if (!document) {
         document = await Document.create({
@@ -102,7 +134,7 @@ io.on("connection", (socket) => {
           content: "",
           title: "Untitled document",
           ownerId: userId,
-          ownerEmail: userEmail || "",
+          ownerEmail: userEmail,
           publicAccess: "restricted",
           collaborators: []
         });
