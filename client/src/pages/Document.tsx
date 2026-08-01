@@ -48,6 +48,7 @@ function Document() {
   const [scrollTop, setScrollTop] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [userRole, setUserRole] = useState<'editor' | 'viewer'>('viewer');
+  const [roleLoaded, setRoleLoaded] = useState(false); // prevents flash of read-only banner before server responds
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [sharingSettings, setSharingSettings] = useState<{
     collaborators: { email: string; role: string }[];
@@ -133,6 +134,7 @@ function Document() {
       setContent(data.content || "");
       setTitle(data.title || "Untitled document");
       if (data.role) setUserRole(data.role);
+      setRoleLoaded(true); // role confirmed — safe to show read-only banner if needed
     });
 
     socket.on("access-denied", (message: string) => {
@@ -462,26 +464,29 @@ function Document() {
             </button>
           )}
 
-          <button
-            className="btn btn-ghost btn-sm"
-            onClick={toggleFullscreen}
-            title={isFullscreen ? "Exit Full Screen" : "Full Screen"}
-            style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-          >
-            {isFullscreen ? <IconExitFullscreen /> : <IconFullscreen />}
-            {isFullscreen ? "Exit" : "Full Screen"}
-          </button>
+          {!isMobile && (
+            <>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={toggleFullscreen}
+                title={isFullscreen ? "Exit Full Screen" : "Full Screen"}
+                style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+              >
+                {isFullscreen ? <IconExitFullscreen /> : <IconFullscreen />}
+                {isFullscreen ? "Exit" : "Full Screen"}
+              </button>
 
-
-          <button
-            id="logout-btn"
-            className="btn btn-ghost btn-sm"
-            style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
-            onClick={handleLogout}
-            title="Logout"
-          >
-            Logout
-          </button>
+              <button
+                id="logout-btn"
+                className="btn btn-ghost btn-sm"
+                style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                onClick={handleLogout}
+                title="Logout"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </header>
 
@@ -510,8 +515,8 @@ function Document() {
 
         <main className="doc-main">
 
-          {/* Read-Only Warning Banner */}
-          {userRole === 'viewer' && (
+          {/* Read-Only Warning Banner — only shown after role is confirmed by server */}
+          {roleLoaded && userRole === 'viewer' && (
             <div className="readonly-banner">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>

@@ -10,7 +10,8 @@ import {
   IconLogout,
   IconClock,
   IconRestore,
-  IconDeletePermanent
+  IconDeletePermanent,
+  IconMenu
 } from "../components/Icons";
 
 interface SavedDoc {
@@ -30,6 +31,7 @@ function Trash() {
   const [docs, setDocs] = useState<SavedDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmDocId, setConfirmDocId] = useState<string | null>(null);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Auth listener
   useEffect(() => {
@@ -134,6 +136,13 @@ function Trash() {
       {/* ── Top Navbar ── */}
       <header className="doc-toolbar">
         <div className="doc-toolbar-left">
+          <button
+            className="btn btn-ghost btn-sm mobile-menu-btn"
+            onClick={() => setMobileSidebarOpen(true)}
+            title="Open menu"
+          >
+            <IconMenu />
+          </button>
           <a href="/" className="doc-toolbar-brand-link">
             <img src={logoImg} alt="RealtimeDocs Logo" className="doc-toolbar-brand-img" />
             <span className="doc-toolbar-brand-name">Realtime<span>Docs</span></span>
@@ -143,9 +152,7 @@ function Trash() {
         <div className="doc-toolbar-right">
           {user && (
             <>
-              <span className="dashboard-user-name">
-                {user.displayName || user.email}
-              </span>
+              <span className="dashboard-user-name hide-on-mobile">{user.displayName || user.email}</span>
               {user.photoURL ? (
                 <img src={user.photoURL} alt="Profile" className="dashboard-avatar" />
               ) : (
@@ -153,7 +160,7 @@ function Trash() {
                   {getInitials(user.displayName || user.email || "U")}
                 </div>
               )}
-              <button className="btn btn-ghost btn-sm dashboard-logout-btn" onClick={handleLogout} title="Sign out">
+              <button className="btn btn-ghost btn-sm dashboard-logout-btn hide-on-mobile" onClick={handleLogout} title="Sign out">
                 <IconLogout /> Sign out
               </button>
             </>
@@ -161,9 +168,21 @@ function Trash() {
         </div>
       </header>
 
+      {mobileSidebarOpen && (
+        <div className="doc-sidebar-backdrop" onClick={() => setMobileSidebarOpen(false)} />
+      )}
+
       {/* ── Body: Sidebar + Main Content ── */}
       <div className="doc-body">
-        <DocSidebar currentDocId="" savedDocs={activeDocs} user={user} onLogout={handleLogout} onDocsUpdate={setDocs} />
+        <DocSidebar
+          currentDocId=""
+          savedDocs={activeDocs}
+          user={user}
+          onLogout={handleLogout}
+          onDocsUpdate={setDocs}
+          mobileOpen={mobileSidebarOpen}
+          onClose={() => setMobileSidebarOpen(false)}
+        />
 
         <main className="dashboard-main" style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
           <section className="dashboard-section">
