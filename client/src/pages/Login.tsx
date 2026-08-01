@@ -4,7 +4,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider, setSessionPersistence } from "../firebase/firebase";
 import socket from "../socket/socket";
 import { toast } from "../utils/toast";
-import {IconDoc,IconZap,IconCopyLink as IconLink,IconLock,IconArrowLeft,IconGoogle} from "../components/Icons";
+import {IconZap,IconCopyLink as IconLink,IconLock,IconArrowLeft,IconGoogle} from "../components/Icons";
 
 function Login() {
   const navigate = useNavigate();

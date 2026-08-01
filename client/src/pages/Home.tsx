@@ -7,7 +7,6 @@ import socket from "../socket/socket";
 import { toast } from "../utils/toast";
 
 import {
-  IconDoc,
   IconZap,
   IconCopyLink as IconLink,
   IconLock,

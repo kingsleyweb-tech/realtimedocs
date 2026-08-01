@@ -5,7 +5,7 @@ import { auth } from "../firebase/firebase";
 import socket from "../socket/socket";
 import logoImg from "../assets/docs.jpg";
 import DocSidebar from "../components/DocSidebar";
-import {IconDoc,IconLogout,IconClock,IconStarFilled,IconStar,IconTrash,IconSharedWith} from "../components/Icons";
+import {IconLogout,IconStarFilled,IconStar,IconTrash,IconSharedWith} from "../components/Icons";
 
 interface SavedDoc {
   documentId: string;
@@ -78,12 +78,6 @@ function SharedWithMe() {
     }
   };
 
-  // Format an ISO date string into a readable format (e.g. "Aug 1, 2026")
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  };
 
   // Extract up to 2 initials from a name for the avatar fallback
   const getInitials = (name: string) => {

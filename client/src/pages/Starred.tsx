@@ -7,7 +7,6 @@ import logoImg from "../assets/docs.jpg";
 import DocSidebar from "../components/DocSidebar";
 
 import {
-  IconDoc,
   IconLogout,
   IconClock,
   IconStarFilled,

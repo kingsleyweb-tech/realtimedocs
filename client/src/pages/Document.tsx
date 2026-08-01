@@ -8,13 +8,10 @@ import DocSidebar from "../components/DocSidebar";
 import { toast } from "../utils/toast";
 import { getCaretCoordinates } from "../utils/caretCoordinates";
 import {
-  IconDoc,
   IconCopyLink,
   IconSidebar,
   IconStar,
-  IconCheck,
   IconShareUser,
-  IconChevronDown,
   IconFullscreen,
   IconExitFullscreen,
   IconStarFilled
@@ -519,13 +516,15 @@ function Document() {
             />
 
             {/* Remote Collaborative Cursors */}
-            {textareaRef.current &&
-              Object.values(cursors).map((c) => {
+            {(() => {
+              const textarea = textareaRef.current;
+              if (!textarea) return null;
+              return Object.values(cursors).map((c) => {
                 if (c.selectionStart === null || c.userId === userId) return null;
 
                 let coords;
                 try {
-                  coords = getCaretCoordinates(textareaRef.current, c.selectionStart);
+                  coords = getCaretCoordinates(textarea, c.selectionStart);
                 } catch (err) {
                   return null;
                 }
@@ -535,14 +534,14 @@ function Document() {
                 const left = coords.left - scrollLeft;
 
                 // Hide cursor if scrolled outside the visible container client area
-                const textareaHeight = textareaRef.current.clientHeight;
-                const textareaWidth = textareaRef.current.clientWidth;
+                const textareaHeight = textarea.clientHeight;
+                const textareaWidth = textarea.clientWidth;
                 if (top < 0 || top > textareaHeight || left < 0 || left > textareaWidth) {
                   return null;
                 }
 
-                const absoluteTop = top + textareaRef.current.offsetTop;
-                const absoluteLeft = left + textareaRef.current.offsetLeft;
+                const absoluteTop = top + textarea.offsetTop;
+                const absoluteLeft = left + textarea.offsetLeft;
 
                 return (
                   <div
@@ -565,7 +564,8 @@ function Document() {
                     </div>
                   </div>
                 );
-              })}
+              });
+            })()}
           </div>
 
           {userRole === 'editor' && (
