@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 const connectDatabase = async () => {
 
-  const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/realtimeDocs";
+  const mongoUri = process.env.MONGO_URI || "mongodb+srv://kingsleyanaab99_db_user:KH8WF0INlGK2fQEz@cluster0.5fx3wbd.mongodb.net/?appName=Cluster0";
 
   try {
 
