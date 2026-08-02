@@ -16,10 +16,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
-// Helper to force session-only persistence — session ends when the browser tab closes
-export const setSessionPersistence = () => {
-  return setPersistence(auth, browserSessionPersistence);
-};
+// Configure session-only persistence on initialization
+setPersistence(auth, browserSessionPersistence).catch((err) => {
+  console.error("Firebase persistence initialization failed", err);
+});
+
+// Deprecated: No longer needed on button clicks as it is set on initialization
+export const setSessionPersistence = () => Promise.resolve();
 
 // Always show the Google account picker so users are never auto-signed in
 export const googleProvider = new GoogleAuthProvider();

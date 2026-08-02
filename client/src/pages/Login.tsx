@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import logoImg from "../assets/docs.jpg";
 import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider, setSessionPersistence } from "../firebase/firebase";
+import { auth, googleProvider } from "../firebase/firebase";
 import socket from "../socket/socket";
 import { toast } from "../utils/toast";
 import {IconZap,IconCopyLink as IconLink,IconLock,IconArrowLeft,IconGoogle} from "../components/Icons";
@@ -13,7 +13,6 @@ function Login() {
   const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      await setSessionPersistence();
       const res = await signInWithPopup(auth, googleProvider);
       const user = res.user;
       
