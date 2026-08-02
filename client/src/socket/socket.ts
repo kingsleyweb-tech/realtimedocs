@@ -1,4 +1,3 @@
-// Import the Socket.IO client to connect to the backend WebSocket server
 import { io } from "socket.io-client";
 
 // Use VITE_SERVER_URL from the client .env, fallback to localhost

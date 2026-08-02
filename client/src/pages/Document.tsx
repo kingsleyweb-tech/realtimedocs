@@ -5,6 +5,7 @@ import socket from "../socket/socket";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import DocSidebar from "../components/DocSidebar";
+import ShareModal from "../components/ShareModal";
 import { toast } from "../utils/toast";
 import { getCaretCoordinates } from "../utils/caretCoordinates";
 import {
@@ -55,7 +56,7 @@ function Document() {
     publicAccess: string;
     ownerEmail: string;
   } | null>(null);
-  const [newCollabEmail, setNewCollabEmail] = useState("");
+  const [newCollabEmail, setNewCollabEmail] = useState(""); // kept for any future toolbar-level invite
   const [newCollabRole, setNewCollabRole] = useState("editor");
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -241,7 +242,6 @@ function Document() {
     }
   }, [userId, id]);
 
-  // ── Handlers ──
   // Broadcast content changes to all collaborators via Socket in real time
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -363,7 +363,6 @@ function Document() {
   return (
     <div className="doc-page">
 
-      {/* ── Toolbar ── */}
       <header className="doc-toolbar">
         <div className="doc-toolbar-left">
           <button
@@ -374,16 +373,12 @@ function Document() {
           >
             <IconSidebar />
           </button>
-
-          {/* Brand — not a link, just decorative */}
           <span className="doc-toolbar-brand-link">
             <img src={logoImg} alt="RealtimeDocs" className="doc-toolbar-brand-img" />
             <span className="doc-toolbar-brand-name">Realtime<span>Docs</span></span>
           </span>
 
           <div className="doc-toolbar-sep" />
-
-          {/* Document Title + Star */}
           <div className="doc-toolbar-title-wrap">
             {editingTitle ? (
               <input
@@ -414,7 +409,6 @@ function Document() {
         </div>
 
         <div className="doc-toolbar-right">
-          {/* Visual Presence Avatars */}
           <div className="presence-group" style={{ display: 'flex', alignItems: 'center', marginRight: '4px' }}>
             {activeUsers.slice(0, 3).map((u, index) => {
               const initials = u.displayName
@@ -490,15 +484,11 @@ function Document() {
         </div>
       </header>
 
-      {/* ── Body: Sidebar + Editor ── */}
       <div className="doc-body">
-
-        {/* Mobile backdrop — shown when sidebar is open on mobile */}
         {isMobile && mobileSidebarOpen && (
           <div className="doc-sidebar-backdrop" onClick={closeMobileSidebar} />
         )}
 
-        {/* Sidebar: desktop = show/hide column; mobile = slide-in overlay */}
         {isMobile ? (
           <DocSidebar
             currentDocId={id}
@@ -515,7 +505,6 @@ function Document() {
 
         <main className="doc-main">
 
-          {/* Read-Only Warning Banner — only shown after role is confirmed by server */}
           {roleLoaded && userRole === 'viewer' && (
             <div className="readonly-banner">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -548,7 +537,6 @@ function Document() {
               placeholder={userRole === 'viewer' ? 'Read-only mode — you cannot edit this document.' : 'Start typing your document here...'}
             />
 
-            {/* Remote Collaborative Cursors */}
             {(() => {
               const textarea = textareaRef.current;
               if (!textarea) return null;
@@ -562,11 +550,8 @@ function Document() {
                   return null;
                 }
 
-                // Adjust positioning based on current textarea scroll offset
                 const top = coords.top - scrollTop;
                 const left = coords.left - scrollLeft;
-
-                // Hide cursor if scrolled outside the visible container client area
                 const textareaHeight = textarea.clientHeight;
                 const textareaWidth = textarea.clientWidth;
                 if (top < 0 || top > textareaHeight || left < 0 || left > textareaWidth) {
@@ -603,7 +588,6 @@ function Document() {
 
           {userRole === 'editor' && (
             <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', width: '100%' }}>
-              {/* Live word / character counter */}
               <div className="doc-counter-pill">
                 <span>
                   <strong>{content.trim() === '' ? 0 : content.trim().split(/\s+/).length}</strong>
@@ -623,14 +607,10 @@ function Document() {
           )}
         </main>
 
-        {/* ── Right Panel: Collaborators & Online Users ── */}
         <aside className="doc-right-panel">
-
-          {/* Collaborators */}
           <div className="doc-rp-section">
             <h3 className="doc-rp-section-title">Collaborators</h3>
             <div className="doc-rp-person-list">
-              {/* Owner row */}
               {sharingSettings && (
                 <div className="doc-rp-person-row">
                   <div className={`doc-rp-avatar doc-rp-avatar-color-${(sharingSettings.ownerEmail?.charCodeAt(0) || 0) % 5}`}>
@@ -646,7 +626,6 @@ function Document() {
                   <span className="doc-rp-role doc-rp-role-owner">Owner</span>
                 </div>
               )}
-              {/* Collaborators */}
               {sharingSettings && sharingSettings.collaborators
                 .slice(0, showAllCollabs ? undefined : 3)
                 .map(c => (
@@ -731,176 +710,13 @@ function Document() {
 
       {/* ── Share Modal ── */}
       {isShareModalOpen && (
-        <div className="share-modal-overlay" onClick={() => setIsShareModalOpen(false)}>
-          <div className="share-modal" onClick={e => e.stopPropagation()}>
-            <div className="share-modal-header">
-              <h3 className="share-modal-title">Share document</h3>
-              <button className="share-modal-close" onClick={() => setIsShareModalOpen(false)}>✕</button>
-            </div>
-
-            {/* Add collaborator form */}
-            <div className="share-modal-section">
-              <label className="share-modal-label">Invite people</label>
-              <div className="share-invite-row">
-                <input
-                  type="email"
-                  className="form-input share-email-input"
-                  placeholder="Enter email address"
-                  value={newCollabEmail}
-                  onChange={e => setNewCollabEmail(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      if (!newCollabEmail.trim()) return;
-                      const updated = [
-                        ...(sharingSettings?.collaborators || []).filter(c => c.email !== newCollabEmail.trim()),
-                        { email: newCollabEmail.trim(), role: newCollabRole }
-                      ];
-                      const newSettings = { collaborators: updated, publicAccess: sharingSettings?.publicAccess || 'restricted' };
-                      setSharingSettings(prev => ({ ...prev!, ...newSettings }));
-                      socket.emit('update-sharing-settings', { documentId: id, userId, ...newSettings });
-                      setNewCollabEmail("");
-                    }
-                  }}
-                />
-                <select
-                  className="share-role-select"
-                  value={newCollabRole}
-                  onChange={e => setNewCollabRole(e.target.value)}
-                >
-                  <option value="editor">Editor</option>
-                  <option value="viewer">Viewer</option>
-                </select>
-                <button
-                  className="btn btn-blue btn-sm"
-                  onClick={() => {
-                    if (!newCollabEmail.trim()) return;
-                    const updated = [
-                      ...(sharingSettings?.collaborators || []).filter(c => c.email !== newCollabEmail.trim()),
-                      { email: newCollabEmail.trim(), role: newCollabRole }
-                    ];
-                    const newSettings = { collaborators: updated, publicAccess: sharingSettings?.publicAccess || 'restricted' };
-                    setSharingSettings(prev => ({ ...prev!, ...newSettings }));
-                    socket.emit('update-sharing-settings', { documentId: id, userId, ...newSettings });
-                    setNewCollabEmail("");
-                    toast.success(`${newCollabEmail} added as ${newCollabRole}`);
-                  }}
-                >
-                  Invite
-                </button>
-              </div>
-            </div>
-
-            {/* Current collaborators list */}
-            {sharingSettings && (
-              <div className="share-modal-section">
-                <label className="share-modal-label">People with access</label>
-                <div className="share-people-list">
-                  {/* Owner row */}
-                  <div className="share-person-row">
-                    <div className="share-person-info">
-                      <div className="share-person-avatar">{(sharingSettings.ownerEmail?.[0] || 'O').toUpperCase()}</div>
-                      <div>
-                        <div className="share-person-email">{sharingSettings.ownerEmail || 'Owner'}</div>
-                        <div className="share-person-badge">Owner</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {sharingSettings.collaborators.map(c => (
-                    <div key={c.email} className="share-person-row">
-                      <div className="share-person-info">
-                        <div className="share-person-avatar">{c.email[0].toUpperCase()}</div>
-                        <div className="share-person-email">{c.email}</div>
-                      </div>
-                      <div className="share-person-actions">
-                        <select
-                          className="share-role-select share-role-select-sm"
-                          value={c.role}
-                          onChange={e => {
-                            const updated = sharingSettings.collaborators.map(x =>
-                              x.email === c.email ? { ...x, role: e.target.value } : x
-                            );
-                            const newSettings = { collaborators: updated, publicAccess: sharingSettings.publicAccess };
-                            setSharingSettings(prev => ({ ...prev!, ...newSettings }));
-                            socket.emit('update-sharing-settings', { documentId: id, userId, ...newSettings });
-                          }}
-                        >
-                          <option value="editor">Editor</option>
-                          <option value="viewer">Viewer</option>
-                        </select>
-                        <button
-                          className="share-remove-btn"
-                          title="Remove"
-                          onClick={() => {
-                            const updated = sharingSettings.collaborators.filter(x => x.email !== c.email);
-                            const newSettings = { collaborators: updated, publicAccess: sharingSettings.publicAccess };
-                            setSharingSettings(prev => ({ ...prev!, ...newSettings }));
-                            socket.emit('update-sharing-settings', { documentId: id, userId, ...newSettings });
-                            toast.success(`${c.email} removed.`);
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* General access */}
-            {sharingSettings && (
-              <div className="share-modal-section">
-                <label className="share-modal-label">General access</label>
-                <div className="share-general-row" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div className="share-general-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', background: 'var(--gray-100)', color: 'var(--gray-600)' }}>
-                    {sharingSettings.publicAccess === 'restricted' ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                      </svg>
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                      </svg>
-                    )}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <select
-                      className="share-role-select"
-                      style={{ width: '100%' }}
-                      value={sharingSettings.publicAccess}
-                      onChange={e => {
-                        const newSettings = { collaborators: sharingSettings.collaborators, publicAccess: e.target.value };
-                        setSharingSettings(prev => ({ ...prev!, publicAccess: e.target.value }));
-                        socket.emit('update-sharing-settings', { documentId: id, userId, ...newSettings });
-                      }}
-                    >
-                      <option value="restricted">Restricted — only invited people can access</option>
-                      <option value="viewer">Anyone with the link can view</option>
-                      <option value="editor">Anyone with the link can edit</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="share-modal-footer">
-              <button className="btn btn-ghost btn-sm" onClick={() => {
-                navigator.clipboard.writeText(window.location.href);
-                toast.success("Document link copied!");
-              }}>
-                <IconCopyLink /> Copy link
-              </button>
-              <button className="btn btn-blue btn-sm" onClick={() => setIsShareModalOpen(false)}>
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
+        <ShareModal
+          documentId={id!}
+          userId={userId!}
+          sharingSettings={sharingSettings}
+          onSharingSettingsChange={setSharingSettings}
+          onClose={() => setIsShareModalOpen(false)}
+        />
       )}
     </div>
   );

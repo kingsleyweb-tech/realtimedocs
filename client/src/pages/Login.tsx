@@ -79,10 +79,7 @@ function Login() {
         </div>
       </div>
 
-      {/* ══ RIGHT PANEL ══ */}
       <div className="auth-right">
-
-        {/* Video background — white bg with spinning fan */}
         <video className="auth-video-bg" autoPlay muted loop playsInline>
           <source src="/vid.mp4" type="video/mp4" />
         </video>

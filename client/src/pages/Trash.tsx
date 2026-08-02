@@ -132,8 +132,6 @@ function Trash() {
 
   return (
     <div className="doc-page">
-
-      {/* ── Top Navbar ── */}
       <header className="doc-toolbar">
         <div className="doc-toolbar-left">
           <button
@@ -172,7 +170,6 @@ function Trash() {
         <div className="doc-sidebar-backdrop" onClick={() => setMobileSidebarOpen(false)} />
       )}
 
-      {/* ── Body: Sidebar + Main Content ── */}
       <div className="doc-body">
         <DocSidebar
           currentDocId=""
@@ -265,7 +262,6 @@ function Trash() {
         </main>
       </div>
 
-      {/* ── Permanent Delete Confirm Modal ── */}
       {confirmDocId && (
         <div className="trash-confirm-overlay" onClick={() => setConfirmDocId(null)}>
           <div className="trash-confirm-modal" onClick={(e) => e.stopPropagation()}>

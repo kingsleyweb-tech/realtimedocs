@@ -6,23 +6,10 @@ import socket from "../socket/socket";
 import logoImg from "../assets/docs.jpg";
 import DocSidebar from "../components/DocSidebar";
 
-import {
-  IconLogout,
-  IconClock,
-  IconStarFilled,
-  IconTrash,
-  IconMenu
-} from "../components/Icons";
+import {IconLogout,IconClock,IconStarFilled,IconTrash,IconMenu} from "../components/Icons";
 
-interface SavedDoc {
-  documentId: string;
-  title: string;
-  lastUpdated: string;
-  isShared?: boolean;
-  role?: string;
-  ownerEmail?: string;
-  isStarred?: boolean;
-  isTrashed?: boolean;
+interface SavedDoc {documentId: string;title: string;lastUpdated: string;
+isShared?: boolean;role?: string;ownerEmail?: string;isStarred?: boolean;isTrashed?: boolean;
 }
 
 function Starred() {
@@ -137,7 +124,6 @@ function Starred() {
   return (
     <div className="doc-page">
 
-      {/* ── Top Navbar ── */}
       <header className="doc-toolbar">
         <div className="doc-toolbar-left">
           <button
@@ -176,7 +162,6 @@ function Starred() {
         <div className="doc-sidebar-backdrop" onClick={() => setMobileSidebarOpen(false)} />
       )}
 
-      {/* ── Body: Sidebar + Main Content ── */}
       <div className="doc-body">
         <DocSidebar
           currentDocId=""

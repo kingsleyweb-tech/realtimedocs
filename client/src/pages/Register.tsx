@@ -33,8 +33,6 @@ function Register() {
   };
   return (
     <div className="auth-page">
-
-      {/* ══ LEFT PANEL ══ */}
       <div className="auth-left">
         <div className="auth-left-brand">
           <img src={logoImg} alt="RealtimeDocs Logo" className="auth-brand-logo-img" />
@@ -79,10 +77,7 @@ function Register() {
         </div>
       </div>
 
-      {/* ══ RIGHT PANEL ══ */}
       <div className="auth-right">
-
-        {/* Video background — white bg with spinning fan */}
         <video className="auth-video-bg" autoPlay muted loop playsInline>
           <source src="/vid.mp4" type="video/mp4" />
         </video>

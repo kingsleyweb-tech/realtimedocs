@@ -140,16 +140,12 @@ function Dashboard() {
       .slice(0, 2);
   };
 
-  // Filter out trashed documents
   const activeDocs = docs.filter((doc) => !doc.isTrashed);
 
   return (
     <div className="doc-page">
-
-      {/* ── Top Navbar ── */}
       <header className="doc-toolbar">
         <div className="doc-toolbar-left">
-          {/* Hamburger: only visible on mobile */}
           <button
             className="btn btn-ghost btn-sm mobile-menu-btn"
             onClick={() => setMobileSidebarOpen(true)}
@@ -176,7 +172,6 @@ function Dashboard() {
                   {getInitials(user.displayName || user.email || "U")}
                 </div>
               )}
-              {/* Logout hidden on mobile — accessible from sidebar */}
               <button className="btn btn-ghost btn-sm dashboard-logout-btn hide-on-mobile" onClick={handleLogout} title="Sign out">
                 <IconLogout /> Sign out
               </button>
@@ -185,12 +180,9 @@ function Dashboard() {
         </div>
       </header>
 
-      {/* Mobile sidebar backdrop */}
       {mobileSidebarOpen && (
         <div className="doc-sidebar-backdrop" onClick={() => setMobileSidebarOpen(false)} />
       )}
-
-      {/* ── Body: Sidebar + Main Content ── */}
       <div className="doc-body">
         <DocSidebar
           currentDocId=""
@@ -203,8 +195,6 @@ function Dashboard() {
         />
 
         <main className="dashboard-main" style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
-
-          {/* Start a new document */}
           <section className="dashboard-section">
             <h2 className="dashboard-section-title">Start a new document</h2>
             <div className="dashboard-new-grid">
@@ -225,8 +215,6 @@ function Dashboard() {
           </section>
 
           <div className="dashboard-divider" />
-
-          {/* Recent documents */}
           <section className="dashboard-section">
             <div className="dashboard-section-header">
               <h2 className="dashboard-section-title">Recent documents</h2>
@@ -253,7 +241,7 @@ function Dashboard() {
                     title={doc.title || "Untitled document"}
                     style={{ position: 'relative' }}
                   >
-                    {/* Document preview thumbnail */}
+
                     <div className="dashboard-doc-thumb">
                       <div className="dashboard-doc-thumb-lines">
                         <div className="thumb-line thumb-line-title" />
@@ -266,7 +254,6 @@ function Dashboard() {
                         <div className="thumb-line thumb-line-medium" />
                       </div>
 
-                      {/* Shared badge — top-right corner of thumbnail */}
                       {doc.isShared && (
                         <div className="dashboard-doc-shared-badge">
                           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
