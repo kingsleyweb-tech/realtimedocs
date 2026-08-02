@@ -336,7 +336,6 @@ function Document() {
     }
   };
 
-  // Toggle fullscreen mode for the document editor page
   const toggleFullscreen = () => {
     const docPage = document.querySelector(".doc-page") as HTMLElement;
     if (!docPage) return;
@@ -654,7 +653,6 @@ function Document() {
             </div>
           </div>
 
-          {/* Online Users */}
           <div className="doc-rp-section">
             <h3 className="doc-rp-section-title">Online Users</h3>
             <div className="doc-rp-person-list">
@@ -684,7 +682,6 @@ function Document() {
             </div>
           </div>
 
-          {/* Document Link */}
           <div className="doc-rp-section">
             <h3 className="doc-rp-section-title">Document Link</h3>
             <p className="doc-rp-link-desc">
@@ -708,7 +705,6 @@ function Document() {
 
       </div>
 
-      {/* ── Share Modal ── */}
       {isShareModalOpen && (
         <ShareModal
           documentId={id!}
