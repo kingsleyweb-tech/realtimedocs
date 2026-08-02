@@ -75,7 +75,7 @@ function Register() {
         </div>
 
         <div className="auth-left-footer">
-          &copy; 2024 RealtimeDocs. All rights reserved.
+          &copy; 2026 RealtimeDocs. All rights reserved.
         </div>
       </div>
 
