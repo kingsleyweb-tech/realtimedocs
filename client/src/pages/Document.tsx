@@ -56,8 +56,6 @@ function Document() {
     publicAccess: string;
     ownerEmail: string;
   } | null>(null);
-  const [newCollabEmail, setNewCollabEmail] = useState(""); // kept for any future toolbar-level invite
-  const [newCollabRole, setNewCollabRole] = useState("editor");
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [showAllCollabs, setShowAllCollabs] = useState(false);
