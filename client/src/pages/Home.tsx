@@ -123,7 +123,6 @@ function Home() {
         </div>
         <div className="lp-nav-actions">
           <a href="/login" className="lp-nav-login">Log in</a>
-          <a href="/register" className="btn-lp-primary btn-lp-sm">Get started free</a>
         </div>
       </nav>
 
