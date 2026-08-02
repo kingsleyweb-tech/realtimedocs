@@ -82,6 +82,12 @@ function Register() {
 
       {/* ══ RIGHT PANEL ══ */}
       <div className="auth-right">
+
+        {/* Video background — white bg with spinning fan */}
+        <video className="auth-video-bg" autoPlay muted loop playsInline>
+          <source src="/vid.mp4" type="video/mp4" />
+        </video>
+
         <div className="auth-right-inner animate-fade-in-up">
 
           <a href="/login" className="auth-back-link">

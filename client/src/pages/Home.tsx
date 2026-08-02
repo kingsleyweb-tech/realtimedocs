@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import logoImg from "../assets/docs.jpg";
 import dashImg from "../assets/dash.png";
-import heroImg from "../assets/image.png";
 import dash1Img from "../assets/dash1.png";
 import shareImg from "../assets/share.png";
 import uniLogo from "../assets/uni.png";
@@ -128,6 +127,11 @@ function Home() {
 
       {/* ══════════ HERO ══════════ */}
       <section className="lp-hero">
+        <video className="lp-hero-video-bg" autoPlay muted loop playsInline>
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
+        <div className="lp-hero-video-overlay" />
+
         <div className="lp-hero-grid">
           <div className="lp-hero-content">
             <div className="lp-hero-badge">
@@ -215,7 +219,7 @@ function Home() {
           </div>
 
           <div className="lp-hero-img-wrap">
-            <img src={heroImg} alt="RealtimeDocs Mockup" className="lp-hero-img" />
+            <img src={dash1Img} alt="RealtimeDocs Mockup" className="lp-hero-img" />
           </div>
         </div>
 
@@ -472,38 +476,14 @@ function Home() {
           </div>
         </div>
 
-        {/* Row 2 — Collaboration view */}
+        {/* Row 2 — Share modal */}
         <div
           id="screenshot-2"
           data-animate
-          className={`lp-screenshot-row lp-screenshot-row-reverse lp-animate ${reveal("screenshot-2")}`}
+          className={`lp-screenshot-row lp-animate ${reveal("screenshot-2")}`}
         >
           <div className="lp-screenshot-text">
             <span className="lp-step-badge">02</span>
-            <h3 className="lp-screenshot-title">Write with your team</h3>
-            <p className="lp-screenshot-desc">
-              Jump into any document and see your teammates' cursors moving in real time. Every edit
-              is synced instantly so everyone is always on the same page.
-            </p>
-            <ul className="lp-screenshot-bullets">
-              <li>Live multi-user cursors</li>
-              <li>Presence avatars in toolbar</li>
-              <li>Auto-save on every keystroke</li>
-            </ul>
-          </div>
-          <div className="lp-screenshot-img-wrap">
-            <img src={dash1Img} alt="RealtimeDocs Editor" className="lp-screenshot-img" />
-          </div>
-        </div>
-
-        {/* Row 3 — Share modal */}
-        <div
-          id="screenshot-3"
-          data-animate
-          className={`lp-screenshot-row lp-animate ${reveal("screenshot-3")}`}
-        >
-          <div className="lp-screenshot-text">
-            <span className="lp-step-badge">03</span>
             <h3 className="lp-screenshot-title">Share with fine control</h3>
             <p className="lp-screenshot-desc">
               Invite collaborators by email and assign them as editors or viewers.
