@@ -480,7 +480,7 @@ function Home() {
         <div
           id="screenshot-2"
           data-animate
-          className={`lp-screenshot-row lp-animate ${reveal("screenshot-2")}`}
+          className={`lp-screenshot-row lp-screenshot-row-reverse lp-animate ${reveal("screenshot-2")}`}
         >
           <div className="lp-screenshot-text">
             <span className="lp-step-badge">02</span>
