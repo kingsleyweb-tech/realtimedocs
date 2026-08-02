@@ -375,11 +375,11 @@ function Document() {
             <IconSidebar />
           </button>
 
-          {/* Brand */}
-          <a href="/" className="doc-toolbar-brand-link" title="Home">
+          {/* Brand — not a link, just decorative */}
+          <span className="doc-toolbar-brand-link">
             <img src={logoImg} alt="RealtimeDocs" className="doc-toolbar-brand-img" />
             <span className="doc-toolbar-brand-name">Realtime<span>Docs</span></span>
-          </a>
+          </span>
 
           <div className="doc-toolbar-sep" />
 

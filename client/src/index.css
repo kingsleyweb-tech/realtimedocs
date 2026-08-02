@@ -907,6 +907,8 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
+  min-height: 0;
 }
 
 .doc-sidebar-header {
@@ -2168,9 +2170,14 @@ body {
   align-items: center;
   gap: 10px;
   padding: 11px 14px;
+  padding-bottom: max(11px, env(safe-area-inset-bottom, 11px));
   border-top: 1px solid var(--border-light);
   background: #ffffff;
   flex-shrink: 0;
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
 }
 
 .doc-sidebar-user-avatar {
@@ -2240,13 +2247,15 @@ body {
    TOOLBAR UPDATES v2
 ═══════════════════════════════════════════════ */
 
-/* Brand link (logo + text) in toolbar */
+/* Brand (logo + text) in toolbar — non-clickable span */
 .doc-toolbar-brand-link {
   display: flex;
   align-items: center;
   gap: 8px;
   text-decoration: none;
   flex-shrink: 0;
+  cursor: default;
+  user-select: none;
 }
 
 .doc-toolbar-brand-img {
