@@ -1,8 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import logoImg from "../assets/docs.jpg";
 import dashImg from "../assets/dash.png";
+import heroImg from "../assets/image.png";
 import dash1Img from "../assets/dash1.png";
 import shareImg from "../assets/share.png";
+import uniLogo from "../assets/uni.png";
+import sokoLogo from "../assets/soko.png";
+import gafLogo from "../assets/gaf.png";
+import airLogo from "../assets/air.png";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/firebase";
@@ -47,7 +52,12 @@ function Home() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.target.id) {
-            setVisibleSections((prev) => new Set([...prev, entry.target.id]));
+            setVisibleSections((prev) => {
+              const next = new Set<string>();
+              prev.forEach((id) => next.add(id));
+              next.add(entry.target.id);
+              return next;
+            });
           }
         });
       },
@@ -119,47 +129,136 @@ function Home() {
 
       {/* ══════════ HERO ══════════ */}
       <section className="lp-hero">
-        <div className="lp-hero-content">
-          <div className="lp-hero-badge">
-            <span className="lp-badge-dot" />
-            Real-time collaboration · Powered by WebSockets
+        <div className="lp-hero-grid">
+          <div className="lp-hero-content">
+            <div className="lp-hero-badge">
+              <span className="lp-badge-dot" />
+              Real-time. Collaborative. Effortless.
+            </div>
+
+            <h1 className="lp-hero-title">
+              Collaborate on<br />
+              Documents in <span className="lp-gradient-text">Real Time</span>
+            </h1>
+
+            <p className="lp-hero-sub">
+              Create, edit, and share documents with your team in real time. Stay productive, wherever you are.
+            </p>
+
+            <div className="lp-hero-cta">
+              <a href="/register" className="btn-lp-primary">
+                Get Started for Free
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+
+            <div className="lp-hero-features">
+              <div className="lp-hero-feature-item">
+                <div className="lp-feature-icon-wrapper">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </div>
+                <div className="lp-feature-text">
+                  <span className="lp-feature-name">Real-time</span>
+                  <span className="lp-feature-desc">Collaboration</span>
+                </div>
+              </div>
+
+              <div className="lp-hero-feature-item">
+                <div className="lp-feature-icon-wrapper">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <div className="lp-feature-text">
+                  <span className="lp-feature-name">Secure &amp;</span>
+                  <span className="lp-feature-desc">Private</span>
+                </div>
+              </div>
+
+              <div className="lp-hero-feature-item">
+                <div className="lp-feature-icon-wrapper">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </div>
+                <div className="lp-feature-text">
+                  <span className="lp-feature-name">Access</span>
+                  <span className="lp-feature-desc">Anywhere</span>
+                </div>
+              </div>
+
+              <div className="lp-hero-feature-item">
+                <div className="lp-feature-icon-wrapper">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/><path d="M12 2a10 10 0 0 0-10 10h10v10a10 10 0 0 0 10-10H12V2z" opacity="0.1"/>
+                  </svg>
+                </div>
+                <div className="lp-feature-text">
+                  <span className="lp-feature-name">Version</span>
+                  <span className="lp-feature-desc">History</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lp-hero-trusted">
+              <span className="lp-trusted-text">Trusted by teams around the world</span>
+              <div className="lp-trusted-logos">
+                <img src={uniLogo} alt="University" className="lp-trusted-logo-img" />
+                <img src={sokoLogo} alt="Soko" className="lp-trusted-logo-img" />
+                <img src={gafLogo} alt="GAF" className="lp-trusted-logo-img" />
+                <img src={airLogo} alt="Air" className="lp-trusted-logo-img" />
+              </div>
+            </div>
           </div>
 
-          <h1 className="lp-hero-title">
-            Write together,<br />
-            <span className="lp-gradient-text">anywhere.</span>
-          </h1>
-
-          <p className="lp-hero-sub">
-            Create, edit, and share documents with your team in real time.
-            See cursors move. Watch words appear. No lag, no conflicts —
-            just seamless collaboration.
-          </p>
-
-          <div className="lp-hero-cta">
-            <a href="/register" className="btn-lp-primary">
-              Start writing free
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </a>
-            <a href="/login" className="btn-lp-outline">Sign in</a>
-          </div>
-
-          <div className="lp-hero-stats">
-            <div className="lp-stat"><span className="lp-stat-num">Real-time</span><span className="lp-stat-label">Sync</span></div>
-            <div className="lp-stat-divider" />
-            <div className="lp-stat"><span className="lp-stat-num">Live</span><span className="lp-stat-label">Cursors</span></div>
-            <div className="lp-stat-divider" />
-            <div className="lp-stat"><span className="lp-stat-num">Instant</span><span className="lp-stat-label">Save</span></div>
-            <div className="lp-stat-divider" />
-            <div className="lp-stat"><span className="lp-stat-num">Secure</span><span className="lp-stat-label">Sharing</span></div>
+          <div className="lp-hero-img-wrap">
+            <img src={heroImg} alt="RealtimeDocs Mockup" className="lp-hero-img" />
           </div>
         </div>
 
-        <div className="lp-hero-img-wrap">
-          <div className="lp-hero-img-glow" />
-          <img src={dashImg} alt="RealtimeDocs Dashboard" className="lp-hero-img" />
+        {/* Bottom Banner */}
+        <div className="lp-hero-stats-bar">
+          <div className="lp-stats-bar-item">
+            <div className="lp-stats-bar-icon lp-icon-users">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div className="lp-stats-bar-text">
+              <span className="lp-stats-bar-num">Academic Project</span>
+              <span className="lp-stats-bar-label">Built for Thesis &amp; Evaluation</span>
+            </div>
+          </div>
+          <div className="lp-stats-bar-divider" />
+
+          <div className="lp-stats-bar-item">
+            <div className="lp-stats-bar-icon lp-icon-docs">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+              </svg>
+            </div>
+            <div className="lp-stats-bar-text">
+              <span className="lp-stats-bar-num">Full Stack Arch</span>
+              <span className="lp-stats-bar-label">React UI &amp; Node.js Backend</span>
+            </div>
+          </div>
+          <div className="lp-stats-bar-divider" />
+
+          <div className="lp-stats-bar-item">
+            <div className="lp-stats-bar-icon lp-icon-uptime">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <div className="lp-stats-bar-text">
+              <span className="lp-stats-bar-num">WebSocket Engine</span>
+              <span className="lp-stats-bar-label">Real-time Sync via Socket.io</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -288,8 +387,8 @@ function Home() {
             <div className="lp-connector-line">
               <div className="lp-arrow-pulse" />
               <svg width="56" height="14" viewBox="0 0 56 14" fill="none">
-                <path d="M0 7 L48 7" stroke="#0ea5e9" strokeWidth="1.5" strokeDasharray="4 2"/>
-                <path d="M47 2 L54 7 L47 12" stroke="#0ea5e9" strokeWidth="1.5" fill="none"/>
+                <path d="M0 7 L48 7" stroke="#64748b" strokeWidth="1.5" strokeDasharray="4 2"/>
+                <path d="M47 2 L54 7 L47 12" stroke="#64748b" strokeWidth="1.5" fill="none"/>
               </svg>
             </div>
           </div>
